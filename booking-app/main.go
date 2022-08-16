@@ -27,7 +27,7 @@ func main() {
 	var firstName string
 	var lastName string
 	var email string
-	var userTickets int
+	var userTickets uint
 	// ask user for their name and saving it into firstName variable previously created
 	fmt.Println("Enter your first name: ")
 	fmt.Scan(firstName)  // this would be empty, because we need to use the "pointer" known also as "special variable"
@@ -41,5 +41,31 @@ func main() {
 	fmt.Println("Enter number of tickets: ")
 	fmt.Scan(&userTickets)
 
+	remainingTickets = remainingTickets - userTickets
+
+	// using Arrays (FIXED SIZE > how many elements the array can hold)
+	// var bookings = [50]string{"John", "Nicole", "Peter"}
+	// var bookings = [50]string{}
+	var bookings [50]string
+	//bookings[0] = "John"
+	//bookings[1] = "Nicole"
+	bookings[0] = firstName + " " + lastName
+	fmt.Printf("The whole array: %v\n", bookings)
+	fmt.Printf("The first value of the array: %v\n", bookings[0])
+	fmt.Printf("The second value of the array: %v\n", bookings[1])
+	fmt.Printf("The Type of the array: %T\n", bookings)
+	fmt.Printf("The lenght of the array: %v\n", len(bookings))
+
+	// using Slice (is like an Array, but IS NOT fixed, so we don't waste memory, is resized when needed)
+	// also, we do not need to use index to ADD elements, we use append() instead
+	var bookings_slice []string
+	// bookings_slice := []string{}
+
+	bookings_slice = append(bookings_slice, firstName+" "+lastName)
+	fmt.Printf("The first value of the slice: %v\n", bookings_slice[0])
+	fmt.Printf("The Type of the slice: %T\n", bookings_slice)
+	fmt.Printf("The lenght of the slice: %v\n", len(bookings_slice))
+
 	fmt.Printf("Thank you %v %v for booking %v tickets. You will receive a confirmation email at %v\n", firstName, lastName, userTickets, email)
+	fmt.Printf("%v tickets remaining for %v\n", remainingTickets, conferenceName)
 }
