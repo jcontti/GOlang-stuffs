@@ -14,44 +14,15 @@ func main() {
 	const conferenceTickets = 50
 	var remainingTickets uint = 50 // uint type DO NOT accept negatives values.
 
-	// how to know the type of variable? we can use %T
-	fmt.Printf("conferenceTickets is %T, remainingTickets is %T, conferenceName is %T\n", conferenceTickets, remainingTickets, conferenceName)
-
-	fmt.Println("Welcome to", conferenceName, "booking application")
-	// same but using Printf, %v is default format of display (we have for numberes, and others specific types), and after the comma we pass what variable.
-	fmt.Printf("Welcome to %v booking app\n", conferenceName) // el \n es para una nueva linea
-
-	fmt.Println("We have total of", conferenceTickets, "tickets and", remainingTickets, "are still available")
-	// same but using Printf
-	fmt.Printf("We have total of %v tickets and %v are STILL available.\n", conferenceTickets, remainingTickets)
-
-	fmt.Println("Get your tickets here to attend")
+	// calling new functions and passing an input parameters
+	greetUsers(conferenceName, conferenceTickets, remainingTickets)
 
 	for {
-		var firstName string
-		var lastName string
-		var email string
-		var userTickets uint
-		// ask user for their name and saving it into firstName variable previously created
-		fmt.Println("Enter your first name: ")
-		fmt.Scan(firstName)  // this would be empty, because we need to use the "pointer" known also as "special variable"
-		fmt.Scan(&firstName) // using the pointer
+		// call getUserInput() function
+		firstName, lastName, email, userTickets := getUserInput()
 
-		fmt.Println("Enter your last name: ")
-		fmt.Scan(&lastName)
-		fmt.Println("Enter your email address: ")
-		fmt.Scan(&email)
-
-		fmt.Println("Enter number of tickets: ")
-		fmt.Scan(&userTickets)
-
-		// firstName and LastName validation: needs to enter at least 2 characters
-		// var isValidName bool =  len(firstName) >= 2 && len(lastName) >= 2
-		isValidName := len(firstName) >= 2 && len(lastName) >= 2
-		// needs to enter a valid email format containg "@" sign:
-		isValidEmail := strings.Contains(email, "@")
-		// needs to enter correct number of ticket (positive + greater than 0) and user buy is lest or equal to remaing tickets
-		isValidTicketNumber := userTickets > 0 && userTickets <= remainingTickets
+		// Validate User Input function and returning 3 booleans values.
+		isValidName, isValidEmail, isValidTicketNumber := validateUserInput(firstName, lastName, email, userTickets, remainingTickets)
 
 		// all conditions must be true to continue booking tickets...
 		if isValidName && isValidEmail && isValidTicketNumber {
@@ -84,16 +55,8 @@ func main() {
 			fmt.Printf("Thank you %v %v for booking %v tickets. You will receive a confirmation email at %v\n", firstName, lastName, userTickets, email)
 			fmt.Printf("%v tickets remaining for %v\n", remainingTickets, conferenceName)
 
-			firstNames := []string{} // create a slice
-			// go and scan bookings_slice, save the value in "booking"
-			//for index, booking := range bookings_slice {
-			// the above code give us problem because we do not use "index", so that's why we'll use the Blank Identifier "_" to ignore a variable we don't want to use
-			for _, booking := range bookings_slice {
-				var fullName = strings.Fields(booking) // strings.Fields will split string separated with space, and will return a SLICE with the split elements
-
-				firstNames = append(firstNames, fullName[0]) // adding only the first name to our slice firstNames
-			}
-
+			// call function print first names and passing the booking slice as input parameter
+			firstNames := getFirstNames(bookings_slice) //it would return a slice with the information needed
 			fmt.Printf("The first names of bookings are: %v\n", firstNames)
 
 			if remainingTickets == 0 {
@@ -118,9 +81,91 @@ func main() {
 			continue // causee loop to skip the rest of its body and immediately re-testing its condition going to the next iteration.
 		}
 	}
+
+	// How to use Switch instead of multiple if-else
+	/* 	city := "London"
+
+	   	switch city {
+	   	case "New York":
+	   		// execute code for new york value
+	   	case "Singapore", "Hong Kong":
+	   		// execute some code here for Singapore and Hong Kong
+	   	case "London", "Berlin":
+	   		// execute some code here for London and Berlin
+	   	case "Mexico":
+	   		// same for mexico..
+	   	default:
+	   		fmt.Println("No valid city selected")
+	   	} */
+
+} // end main function
+
+func greetUsers(paramConfName string, paramConfTickets int, paramRemainingTickets uint) {
+	fmt.Printf("Welcome to our %v - func greetUsers() \n", paramConfName)
+
+	// how to know the type of variable? we can use %T
+	fmt.Printf("conferenceTickets is %T, remainingTickets is %T, conferenceName is %T\n", paramConfTickets, paramRemainingTickets, paramConfName)
+	fmt.Println("Welcome to", paramConfName, "booking application")
+	// same but using Printf, %v is default format of display (we have for numberes, and others specific types), and after the comma we pass what variable.
+	fmt.Printf("Welcome to %v booking app\n", paramConfName) // el \n es para una nueva linea
+	fmt.Println("We have total of", paramConfTickets, "tickets and", paramRemainingTickets, "are still available")
+	// same but using Printf
+	fmt.Printf("We have total of %v tickets and %v are STILL available.\n", paramConfTickets, paramRemainingTickets)
+	fmt.Println("Get your tickets here to attend")
+} // end greetUsers function
+
+// the first part "getFirstNames(paramBookingsSlice []string)" is creating a function that receiv a slice as parameter
+// the second part "[]string" is saying that will RETURN an output type slice to where the function was called
+func getFirstNames(paramBookingsSlice []string) []string {
+	firstNames := []string{} // create a slice
+	// go and scan bookings_slice, save the value in "booking"
+	//for index, booking := range bookings_slice {
+	// the above code give us problem because we do not use "index", so that's why we'll use the Blank Identifier "_" to ignore a variable we don't want to use
+	for _, booking := range paramBookingsSlice {
+		var fullName = strings.Fields(booking) // strings.Fields will split string separated with space, and will return a SLICE with the split elements
+
+		firstNames = append(firstNames, fullName[0]) // adding only the first name to our slice firstNames
+	}
+
+	return firstNames
+} // end getFirstNames function
+
+func validateUserInput(paramFirstName string, paramLastName string, paramEmail string, paramUserTickets uint, paramRemainingTickets uint) (bool, bool, bool) {
+	// firstName and LastName validation: needs to enter at least 2 characters
+	// var isValidName bool =  len(firstName) >= 2 && len(lastName) >= 2
+	isValidName := len(paramFirstName) >= 2 && len(paramLastName) >= 2
+	// needs to enter a valid email format containg "@" sign:
+	isValidEmail := strings.Contains(paramEmail, "@")
+	// needs to enter correct number of ticket (positive + greater than 0) and user buy is lest or equal to remaing tickets
+	isValidTicketNumber := paramUserTickets > 0 && paramUserTickets <= paramRemainingTickets
+
+	return isValidName, isValidEmail, isValidTicketNumber // the output of this function are 3 boolean, that's why we have (bool, bool, bool) at the beginning
+} // end validateUserInpuut function
+
+// this function do not need input parameters, but would need output (return) values.
+func getUserInput() (string, string, string, uint) {
+	var firstName string
+	var lastName string
+	var email string
+	var userTickets uint
+	// ask user for their name and saving it into firstName variable previously created
+	fmt.Println("Enter your first name: ")
+	fmt.Scan(firstName)  // this would be empty, because we need to use the "pointer" known also as "special variable"
+	fmt.Scan(&firstName) // using the pointer
+
+	fmt.Println("Enter your last name: ")
+	fmt.Scan(&lastName)
+	fmt.Println("Enter your email address: ")
+	fmt.Scan(&email)
+
+	fmt.Println("Enter number of tickets: ")
+	fmt.Scan(&userTickets)
+
+	return firstName, lastName, email, userTickets
 }
 
 /* NOTES:
 - We have only one kind of LOOP in Go which is "for"
 - in Go we NEED to use Blank Identifier "_" underscore to explicit variables that we won't use.
+- A Go function can return multiple values
 */
