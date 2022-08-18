@@ -3,8 +3,33 @@ package main
 import (
 	"booking-app/helper"
 	"fmt"
+	"strconv"
 	"strings"
+	"sync"
+	"time"
 )
+
+// creating an empty list of maps types
+var bookings_maps = make([]map[string]string, 0) // we need to define the initial size of the slice, it will increase because is a slice so 0 it's ok.
+
+// creating a struct, where we can mix diferents types likee string and unit among others.
+type userDataStruct struct {
+	// define the list of keys
+	firstName       string
+	lastName        string
+	email           string
+	numberOfTickets uint
+} // struct can be similar to "class" concept in POO, but without inheritance. So it simpler and cleaner than using maps.
+
+// when we are using multiple-threads we need to synchronizing them, because maybe main thread finish and do not wait for ther other thread to do theeir jobs...
+var wg = sync.WaitGroup{
+	// Waits for the launched gorooutine to finish
+	// Package "sync" provides basic synchronization functionality
+	// WaitGroup has 3 functions that we can call:
+	// - Add(): sets the number of gorouutines to wait for
+	// - Wait(): blocks until the Waitgroup counter is 0. It needs to be place at the end of the "main thread"
+	// - Done(): Decrements the WaitGroup counter by 1. So this is called by the gorouutine to indicate that it's finished
+}
 
 func main() {
 	var conferenceName = "GOlang Conference"
@@ -48,6 +73,15 @@ func main() {
 			var bookings_slice []string
 			// bookings_slice := []string{}
 
+			// create an empty map for a user
+			var userData = make(map[string]string) // bear in mind that the type key and value must be the same. string-string, int-int, etc...
+			// adding key-pair values to a map
+			userData["firstNameKeyName"] = firstName // ["firstNameKeyNAme"] is KeyName and the value is the variable firstName
+			userData["lastNameKeyName"] = lastName
+			userData["emailKeyName"] = email
+			userData["numberOfTicketsKeyName"] = strconv.FormatUint(uint64(userTickets), 10) // takes our uinit value and format to a string as decimal number (10 represent decimal number, 16 represent hexadecimalnumbers)
+			bookings_maps = append(bookings_maps, userData)                                  // adding a map to our list
+
 			bookings_slice = append(bookings_slice, firstName+" "+lastName)
 			fmt.Printf("The first value of the slice: %v\n", bookings_slice[0])
 			fmt.Printf("The Type of the slice: %T\n", bookings_slice)
@@ -55,6 +89,11 @@ func main() {
 
 			fmt.Printf("Thank you %v %v for booking %v tickets. You will receive a confirmation email at %v\n", firstName, lastName, userTickets, email)
 			fmt.Printf("%v tickets remaining for %v\n", remainingTickets, conferenceName)
+
+			// using "send email" function in another thread, so now our application is concurrent
+			wg.Add(1)
+			go sendTicket(userTickets, firstName, lastName, email) // "go" starts a new goroutine, which is a lightweight thread managed by the Go runtime
+			// so now, ouur sendTicket function runs in "background"
 
 			// call function print first names and passing the booking slice as input parameter
 			firstNames := getFirstNames(bookings_slice) //it would return a slice with the information needed
@@ -82,7 +121,7 @@ func main() {
 			continue // causee loop to skip the rest of its body and immediately re-testing its condition going to the next iteration.
 		}
 	}
-
+	wg.Wait()
 	// How to use Switch instead of multiple if-else
 	/* 	city := "London"
 
@@ -153,6 +192,19 @@ func getUserInput() (string, string, string, uint) {
 	return firstName, lastName, email, userTickets
 }
 
+// function to send tickets by email
+func sendTicket(paramUserTickets uint, paramFirstName string, paramLastName string, paramEmail string) {
+	time.Sleep(10 * time.Second) // simulating 10 seconds delay
+
+	// if we can save the output string of a Print function, we shouuld use Sprintf
+	var ticket = fmt.Sprintf("%v tickets for %v %v", paramUserTickets, paramFirstName, paramLastName)
+	// so when I use thee variable ticket, it wouuld return the output with al the %v replaced.
+	fmt.Println("##############################")
+	fmt.Printf("Sending ticket:\n  %v \nto email address %v\n", ticket, paramEmail)
+	fmt.Println("##############################")
+	wg.Done()
+}
+
 /* NOTES:
 - Go programs are organized into packages, a package is a collection of Go files..
 - We have only one kind of LOOP in Go which is "for"
@@ -162,4 +214,5 @@ func getUserInput() (string, string, string, uint) {
 - Whenever we need to use a function of another package, we must explicit import it. (applied to our homemade package as well)
 - When we want that one function from one package can be used in another package, we need to EXPORT that function. For that we just need to CAPITALIZE the first letter of the function
 - We can also EXPORT: variables, functions, constants, types to be used in another packages.
+- Concurrency: we use "go" before calling a function to make that function starts in another thread.
 */
