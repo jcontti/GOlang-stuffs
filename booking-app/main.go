@@ -1,6 +1,7 @@
 package main
 
 import (
+	"booking-app/helper"
 	"fmt"
 	"strings"
 )
@@ -22,7 +23,7 @@ func main() {
 		firstName, lastName, email, userTickets := getUserInput()
 
 		// Validate User Input function and returning 3 booleans values.
-		isValidName, isValidEmail, isValidTicketNumber := validateUserInput(firstName, lastName, email, userTickets, remainingTickets)
+		isValidName, isValidEmail, isValidTicketNumber := helper.ValidateUserInput(firstName, lastName, email, userTickets, remainingTickets)
 
 		// all conditions must be true to continue booking tickets...
 		if isValidName && isValidEmail && isValidTicketNumber {
@@ -130,18 +131,6 @@ func getFirstNames(paramBookingsSlice []string) []string {
 	return firstNames
 } // end getFirstNames function
 
-func validateUserInput(paramFirstName string, paramLastName string, paramEmail string, paramUserTickets uint, paramRemainingTickets uint) (bool, bool, bool) {
-	// firstName and LastName validation: needs to enter at least 2 characters
-	// var isValidName bool =  len(firstName) >= 2 && len(lastName) >= 2
-	isValidName := len(paramFirstName) >= 2 && len(paramLastName) >= 2
-	// needs to enter a valid email format containg "@" sign:
-	isValidEmail := strings.Contains(paramEmail, "@")
-	// needs to enter correct number of ticket (positive + greater than 0) and user buy is lest or equal to remaing tickets
-	isValidTicketNumber := paramUserTickets > 0 && paramUserTickets <= paramRemainingTickets
-
-	return isValidName, isValidEmail, isValidTicketNumber // the output of this function are 3 boolean, that's why we have (bool, bool, bool) at the beginning
-} // end validateUserInpuut function
-
 // this function do not need input parameters, but would need output (return) values.
 func getUserInput() (string, string, string, uint) {
 	var firstName string
@@ -165,7 +154,12 @@ func getUserInput() (string, string, string, uint) {
 }
 
 /* NOTES:
+- Go programs are organized into packages, a package is a collection of Go files..
 - We have only one kind of LOOP in Go which is "for"
 - in Go we NEED to use Blank Identifier "_" underscore to explicit variables that we won't use.
 - A Go function can return multiple values
+- Variables and Functions defined outside any function, can be accessed in all other files within the same package.
+- Whenever we need to use a function of another package, we must explicit import it. (applied to our homemade package as well)
+- When we want that one function from one package can be used in another package, we need to EXPORT that function. For that we just need to CAPITALIZE the first letter of the function
+- We can also EXPORT: variables, functions, constants, types to be used in another packages.
 */
