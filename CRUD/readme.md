@@ -6,6 +6,6 @@
  -- create a table call "employees" with id (Auto-Int), name (Str), email (Str)  
 
   
-- Running the app: 
+- Running the app:  
  -- execute: go run main.go  
  -- go to http://localhost:8080  
