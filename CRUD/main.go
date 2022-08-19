@@ -13,7 +13,7 @@ import (
 func connectDB() (connection *sql.DB) {
 	Driver := "mysql"
 	User := "root"
-	Pass := ""
+	Pass := "rootroot"
 	dbName := "my_system_db"
 
 	// if the connection fails with an error, that wouuld be saved in "err"
@@ -34,11 +34,19 @@ func main() {
 	http.HandleFunc("/", Home)         // "Home is the name of our function which will be call"
 	http.HandleFunc("/create", Create) // when the user goes to /create url, call the function "Create"
 	http.HandleFunc("/insert", Insert) // our create form send info to our insert page/function
+	http.HandleFunc("/delete", Delete) // delete rows from table
 
 	log.Println("Server is running...")
 
 	// Starts the server ( http://localhost:8080/ )8080 indicate the server port
 	http.ListenAndServe(":8080", nil)
+}
+
+// We need to create a struct to hold the select of the employees
+type Employee struct {
+	Id    int
+	Name  string
+	Email string
 }
 
 // When we call our function with HandleFunc we will have 2 parameters of reception
@@ -49,15 +57,34 @@ func Home(w http.ResponseWriter, r *http.Request) {
 
 	// use the database connection:
 	connEstablished := connectDB()
-	// insert new values to the DB
-	insertReg, err := connEstablished.Prepare("INSERT INTO employees(name,email) VALUES('oscar','oscarcito@gmail.com') ")
+	// Get values from the DB
+	getReg, err := connEstablished.Query("SELECT * FROM employees")
 	if err != nil {
 		panic(err.Error())
 	}
-	insertReg.Exec()
 
-	// show our template in the internet browser
-	myTemplate.ExecuteTemplate(w, "home", nil)
+	employee := Employee{}
+	arrayEmployee := []Employee{}
+
+	// reading the values of the select and assigning them to variables
+	for getReg.Next() {
+		var id int
+		var name, email string
+		err = getReg.Scan(&id, &name, &email)
+
+		if err != nil {
+			panic(err.Error())
+		}
+
+		employee.Id = id
+		employee.Name = name
+		employee.Email = email
+
+		arrayEmployee = append(arrayEmployee, employee)
+	}
+
+	// show our template in the internet browser, filled with the table Employees, we send our array to be consumed by the home.html
+	myTemplate.ExecuteTemplate(w, "home", arrayEmployee)
 
 }
 
@@ -84,6 +111,23 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 		// redirect to home
 		http.Redirect(w, r, "/", 301)
 	}
+}
+
+// Function to delete rows from the table employees
+func Delete(w http.ResponseWriter, r *http.Request) {
+	idEmployee := r.URL.Query().Get("id") //  get the request that is passed as GET which is ID
+
+	connEstablished := connectDB()
+	delReg, err := connEstablished.Prepare("DELETE FROM employees WHERE id=?")
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	delReg.Exec(idEmployee)
+
+	http.Redirect(w, r, "/", 301)
+
 }
 
 /* NOTES:

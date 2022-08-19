@@ -13,13 +13,19 @@
                 <th>Actions</th>
             </tr>
         </thead>
+
         <tbody>
+    {{ range.}}
             <tr>
-                <td> 1</td>
-                <td> George Will</td>
-                <td> gw@gmail.com</td>
-                <td> Edit | Delete</td>
+                <td> {{.Id}} </td>
+                <td> {{.Name}} </td>
+                <td> {{.Email}} </td>
+                <td> Edit {{.Id}} | 
+                <a name="" id="" class="btn btn-danger" href="/delete?id={{.Id}}" role="button">Delete</a>
+                </td>
             </tr>
+    {{ end }}
+
         </tbody>
     </table>
 
