@@ -133,7 +133,6 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// Function to delete rows from the table employees
 func Edit(w http.ResponseWriter, r *http.Request) {
 	idEmployee := r.URL.Query().Get("id")
 
