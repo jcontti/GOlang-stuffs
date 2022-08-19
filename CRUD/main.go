@@ -33,6 +33,7 @@ func main() {
 
 	http.HandleFunc("/", Home)         // "Home is the name of our function which will be call"
 	http.HandleFunc("/create", Create) // when the user goes to /create url, call the function "Create"
+	http.HandleFunc("/insert", Insert) // our create form send info to our insert page/function
 
 	log.Println("Server is running...")
 
@@ -62,6 +63,27 @@ func Home(w http.ResponseWriter, r *http.Request) {
 
 func Create(w http.ResponseWriter, r *http.Request) {
 	myTemplate.ExecuteTemplate(w, "create", nil) // call the template "create.html"
+}
+
+// this function will received the data from the POST method of the create function
+func Insert(w http.ResponseWriter, r *http.Request) {
+	// if there's POST data, so we'll catch them
+	if r.Method == "POST" {
+		name := r.FormValue("name") // here we have to put the id/name from the form "create"
+		email := r.FormValue("email")
+
+		connEstablished := connectDB()                                                              // use the database connection:
+		insertReg, err := connEstablished.Prepare("INSERT INTO employees(name,email) VALUES(?,?) ") // insert new values to the DB
+
+		if err != nil {
+			panic(err.Error())
+		}
+
+		insertReg.Exec(name, email) // the Exec, will pass that 2 parameters values to the VALUES (?,?) sql syntax...in the INSERT
+
+		// redirect to home
+		http.Redirect(w, r, "/", 301)
+	}
 }
 
 /* NOTES:
