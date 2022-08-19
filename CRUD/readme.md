@@ -1,4 +1,4 @@
-# This project would use Golang + MySql + Bootstrap + Html 
+# This project use Golang + MySql + Bootstrap + Html 
   
 - Before running the app:
  -- install MySql  
