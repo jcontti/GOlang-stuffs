@@ -1,0 +1,27 @@
+<!-- To use this template, we need to defined, if we need to includ others, we uuse template plus the name -->
+{{ define "home" }}
+{{ template "header" }}
+
+    <a name="" id="" class="btn btn-primary" href="/create" role="button">Add employee</a>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td> 1</td>
+                <td> George Will</td>
+                <td> gw@gmail.com</td>
+                <td> Edit | Delete</td>
+            </tr>
+        </tbody>
+    </table>
+
+{{ template "footer" }}
+{{ end }}
