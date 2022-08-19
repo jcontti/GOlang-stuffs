@@ -4,6 +4,8 @@
 
     <a name="" id="" class="btn btn-primary" href="/create" role="button">Add employee</a>
 
+<br/><br/>
+
     <table class="table">
         <thead>
             <tr>
@@ -20,8 +22,9 @@
                 <td> {{.Id}} </td>
                 <td> {{.Name}} </td>
                 <td> {{.Email}} </td>
-                <td> Edit {{.Id}} | 
-                <a name="" id="" class="btn btn-danger" href="/delete?id={{.Id}}" role="button">Delete</a>
+                <td>
+                    <a name="" id="" class="btn btn-warning" href="/edit?id={{.Id}}" role="button">Edit</a> | 
+                    <a name="" id="" class="btn btn-danger" href="/delete?id={{.Id}}" role="button">Delete</a>
                 </td>
             </tr>
     {{ end }}

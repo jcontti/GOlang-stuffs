@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -35,6 +36,8 @@ func main() {
 	http.HandleFunc("/create", Create) // when the user goes to /create url, call the function "Create"
 	http.HandleFunc("/insert", Insert) // our create form send info to our insert page/function
 	http.HandleFunc("/delete", Delete) // delete rows from table
+	http.HandleFunc("/edit", Edit)     // edit values
+	http.HandleFunc("/update", Update) // update values
 
 	log.Println("Server is running...")
 
@@ -128,6 +131,58 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/", 301)
 
+}
+
+// Function to delete rows from the table employees
+func Edit(w http.ResponseWriter, r *http.Request) {
+	idEmployee := r.URL.Query().Get("id")
+
+	connEstablished := connectDB()
+	editReg, err := connEstablished.Query("SELECT * FROM employees WHERE id=?", idEmployee)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	employee := Employee{}
+
+	for editReg.Next() {
+		var id int
+		var name, email string
+		err = editReg.Scan(&id, &name, &email)
+
+		if err != nil {
+			panic(err.Error())
+		}
+
+		employee.Id = id
+		employee.Name = name
+		employee.Email = email
+	}
+
+	fmt.Println(employee)
+
+	myTemplate.ExecuteTemplate(w, "edit", employee) // call the template "edit.html" and send the employee array
+
+}
+
+func Update(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		id := r.FormValue("id")
+		name := r.FormValue("name")
+		email := r.FormValue("email")
+
+		connEstablished := connectDB()
+		UpdateReg, err := connEstablished.Prepare("UPDATE employees SET name=?,email=? WHERE id=?")
+
+		if err != nil {
+			panic(err.Error())
+		}
+
+		UpdateReg.Exec(name, email, id)
+
+		http.Redirect(w, r, "/", 301)
+	}
 }
 
 /* NOTES:
