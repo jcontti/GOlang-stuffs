@@ -1,11 +1,14 @@
 # This project use Golang + Docker + Minikube(kubernetes) + Helm
   
 - Before running the app:  
- -- install Minikube  
- -- Install Docker
- -- start your kubernetes cluster 
+ -- Install VirtualBox  
+ -- Install Minikube  
+ -- Install Docker  
+ -- Start your kubernetes cluster using "minikube start --driver=docker"  
+
  
   
 - Running the app:  
- -- execute: go run main.go  
- -- go to http://localhost:80
+ -- Build the image: docker build -t go-app-normal:latest .  
+ -- Start the container: docker run -d -p 80:80 --name web go-app-normal:latest
+ -- Go to http://localhost:80
