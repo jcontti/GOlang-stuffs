@@ -1,0 +1,1 @@
+# This project use Golang to upload files to Slack
