@@ -9,6 +9,12 @@
  
   
 - Running the app:  
- -- Build the image: docker build -t go-app-normal:latest .  
- -- Start the container: docker run -d -p 80:80 --name web go-app-normal:latest
- -- Go to http://localhost:80
+ -- Build the image:  
+ ```
+  docker build -t go-app-normal:latest .
+ ```  
+ -- Start the container:  
+ ```
+  docker run -d -p 80:80 --name web go-app-normal:latest
+ ```  
+ -- Go to http://localhost:80  
